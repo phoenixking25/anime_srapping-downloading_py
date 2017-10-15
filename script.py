@@ -3,12 +3,12 @@ import requests
 import click
 import re
 import sys
+from clint.textui import progress
 
 
 urls = [
     'http://crusader.pp.ua/anime/',
     'http://booksaz.space/s1/Anime/',
-    'https://archives.eyrie.org/anime/',
     'http://booksaz.space/s1/Anime/Ended/',
     'http://booksaz.space/s1/Anime/OVA/',
     'http://booksaz.space/s1/Anime/2017/',
@@ -25,6 +25,7 @@ urls = [
 
 def animename(ctx, name_of_anime, url):
     dir_link = []
+    print "Finding you anime"
     for i in urls:
         r  = requests.get(i)
         data = r.text
@@ -39,7 +40,6 @@ def animename(ctx, name_of_anime, url):
         print 'You anime not found'
 
 def opendir(dir_link):
-    print dir_link
     download_link = []
     for i in dir_link:
         r = requests.get(i)
@@ -64,7 +64,19 @@ def opendir(dir_link):
 
 
 def downloadfiles(download_link):
-    print 'Hurra'
+    j = 1
+    for i in download_link:
+        print 'Downloading %r file' % j
+        r = requests.get(i, stream=True)
+        path = 'anime.mkv'
+        with open(path, 'wb') as f:
+            total_length = int(r.headers.get('content-length'))
+            for chunk in progress.bar(r.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
+                if chunk:
+                    f.write(chunk)
+                    f.flush()
+        print '%r file downloaded' % j
+        j += 1
 
 
 if __name__ == '__main__':
