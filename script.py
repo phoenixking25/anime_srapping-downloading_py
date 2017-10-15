@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import click
 import re
+import sys
 
 
 urls = [
@@ -48,7 +49,22 @@ def opendir(dir_link):
         if len(list):
             for j in list:
                 download_link.append(i + j.get('href'))
-    print download_link
+    print "There are total %r files to be downloaded" % len(download_link)
+
+    yes = {'yes', 'y', 'ye', ''}
+    no = {'no', 'n'}
+
+    choice = raw_input('Do you want to continue?(y/n) ').lower()
+    if choice in yes:
+        downloadfiles(download_link)
+    elif choice in no:
+        print "Sayonara"
+    else:
+        sys.stdout.write("Please respond with 'yes' or 'no'")
+
+
+def downloadfiles(download_link):
+    print 'Hurra'
 
 
 if __name__ == '__main__':
